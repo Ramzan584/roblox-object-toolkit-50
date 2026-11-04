@@ -1,5 +1,10 @@
 # Roblox Object Toolkit 50 · v1.0.0
 
+**Связь / Contact:** [Telegram @timura032](https://t.me/timura032) · [Профиль и другие паки / More packs](https://github.com/Ramzan584) · [Отзывы / Feedback](https://github.com/Ramzan584/Ramzan584/issues/1)
+
+Нужны скрипты, модели, доработка или целая карта? Напиши задачу в Telegram. Если пак помог, оставь отзыв: версия, что заработало и что добавить. / Need scripts, models or help with a map? Get in touch. Share your pack version, what worked and suggestions in Feedback.
+
+
 **50 самостоятельных скриптов для объектов и игровых механик Roblox Studio.**
 **50 standalone scripts for Roblox Studio objects and game mechanics.**
 
@@ -160,3 +165,4 @@ This is an initial template release. **Roblox Studio has not been run for this r
 - [PrismaticConstraint](https://create.roblox.com/docs/reference/engine/classes/PrismaticConstraint)
 
 Об ошибках: создай Issue с номером скрипта, местом установки, шагами воспроизведения и сообщением Output. / Report issues with script number, install location, reproduction steps and Output errors.
+
