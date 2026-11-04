@@ -1,0 +1,452 @@
+[
+  {
+    "id": 1,
+    "category": "01_Teleports",
+    "file": "01_TouchTeleport.server.lua",
+    "ru": "Телепорт по касанию",
+    "en": "Touch teleport",
+    "setup": "Part A: ObjectValue Destination → Part B.",
+    "kind": "server"
+  },
+  {
+    "id": 2,
+    "category": "01_Teleports",
+    "file": "02_PromptTeleport.server.lua",
+    "ru": "Телепорт через кнопку E",
+    "en": "Prompt teleport",
+    "setup": "Part: ObjectValue Destination → Part B.",
+    "kind": "server"
+  },
+  {
+    "id": 3,
+    "category": "01_Teleports",
+    "file": "03_RandomTeleport.server.lua",
+    "ru": "Случайная точка",
+    "en": "Random destination teleport",
+    "setup": "Part: ObjectValue Destinations → Folder с Part / Folder containing destination Parts.",
+    "kind": "server"
+  },
+  {
+    "id": 4,
+    "category": "01_Teleports",
+    "file": "04_PairedPortal.server.lua",
+    "ru": "Двусторонний портал",
+    "en": "Paired portals",
+    "setup": "По копии в A и B; Destination каждого указывает на другой / one copy in each portal, cross-link Destination.",
+    "kind": "server"
+  },
+  {
+    "id": 5,
+    "category": "01_Teleports",
+    "file": "05_PlaceTeleport.server.lua",
+    "ru": "Переход в другой Place",
+    "en": "Teleport to another place",
+    "setup": "Part. PLACE_ID = ID своего опубликованного Place / your published destination ID. Roblox client required.",
+    "kind": "server"
+  },
+  {
+    "id": 6,
+    "category": "02_Doors",
+    "file": "06_SlidingDoor.server.lua",
+    "ru": "Раздвижная дверь",
+    "en": "Sliding door",
+    "setup": "Anchored Part; OFFSET и SECONDS в коде / configure OFFSET and SECONDS.",
+    "kind": "server"
+  },
+  {
+    "id": 7,
+    "category": "02_Doors",
+    "file": "07_HingedDoor.server.lua",
+    "ru": "Распашная дверь",
+    "en": "Hinged door",
+    "setup": "Anchored Part; петля на левом краю локальной X / hinge at local left edge.",
+    "kind": "server"
+  },
+  {
+    "id": 8,
+    "category": "02_Doors",
+    "file": "08_TimedGate.server.lua",
+    "ru": "Ворота с автозакрытием",
+    "en": "Timed gate",
+    "setup": "Anchored Part; WAIT_SECONDS задаёт время открытия / open duration.",
+    "kind": "server"
+  },
+  {
+    "id": 9,
+    "category": "02_Doors",
+    "file": "09_KeyDoor.server.lua",
+    "ru": "Дверь с ключом",
+    "en": "Key tool door",
+    "setup": "Part; Tool с именем Key в Backpack или Character / Tool named Key. Does not consume key.",
+    "kind": "server"
+  },
+  {
+    "id": 10,
+    "category": "02_Doors",
+    "file": "10_TwoButtonGate.server.lua",
+    "ru": "Ворота с двумя кнопками",
+    "en": "Two button gate",
+    "setup": "Gate Part: ObjectValue ButtonA и ButtonB → разные Part. Нажать за 5 с / press both within 5 seconds.",
+    "kind": "server"
+  },
+  {
+    "id": 11,
+    "category": "03_Buttons",
+    "file": "11_ToggleLight.server.lua",
+    "ru": "Кнопка света",
+    "en": "Light switch",
+    "setup": "Button Part: ObjectValue Target → PointLight, SpotLight или SurfaceLight (Light).",
+    "kind": "server"
+  },
+  {
+    "id": 12,
+    "category": "03_Buttons",
+    "file": "12_TimedBridge.server.lua",
+    "ru": "Временный мост",
+    "en": "Timed bridge button",
+    "setup": "Button Part: ObjectValue Target → Bridge Part; начинается невидимым / starts hidden.",
+    "kind": "server"
+  },
+  {
+    "id": 13,
+    "category": "03_Buttons",
+    "file": "13_PressurePlate.server.lua",
+    "ru": "Нажимная плита",
+    "en": "Pressure plate",
+    "setup": "Plate Part: ObjectValue Target → Gate Part. CanQuery=true у частей персонажа / character parts must be queryable.",
+    "kind": "server"
+  },
+  {
+    "id": 14,
+    "category": "03_Buttons",
+    "file": "14_ColorCycle.server.lua",
+    "ru": "Кнопка смены цвета",
+    "en": "Color cycle button",
+    "setup": "Button Part: ObjectValue Target → Part.",
+    "kind": "server"
+  },
+  {
+    "id": 15,
+    "category": "03_Buttons",
+    "file": "15_ResetObject.server.lua",
+    "ru": "Возврат объекта на место",
+    "en": "Reset movable object",
+    "setup": "Button Part: ObjectValue Target → Part. Сохраняет стартовую CFrame / stores initial CFrame.",
+    "kind": "server"
+  },
+  {
+    "id": 16,
+    "category": "04_Platforms",
+    "file": "16_Conveyor.server.lua",
+    "ru": "Конвейер",
+    "en": "Conveyor belt",
+    "setup": "Anchored Part. DIRECTION и SPEED / direction and speed in code. Unanchored riders.",
+    "kind": "server"
+  },
+  {
+    "id": 17,
+    "category": "04_Platforms",
+    "file": "17_BouncePad.server.lua",
+    "ru": "Батут",
+    "en": "Bounce pad",
+    "setup": "Part. UP_SPEED в studs/sec; CanTouch=true.",
+    "kind": "server"
+  },
+  {
+    "id": 18,
+    "category": "04_Platforms",
+    "file": "18_DisappearingTile.server.lua",
+    "ru": "Исчезающая плитка",
+    "en": "Disappearing tile",
+    "setup": "Anchored Part. Исчезает на 3 с после задержки / vanishes after 0.5 seconds.",
+    "kind": "server"
+  },
+  {
+    "id": 19,
+    "category": "04_Platforms",
+    "file": "19_RisingPlatform.server.lua",
+    "ru": "Подъёмная платформа",
+    "en": "Rising platform",
+    "setup": "Anchored Part. Кинематическая: перенос пассажира не гарантирован / kinematic, rider transport not guaranteed.",
+    "kind": "server"
+  },
+  {
+    "id": 20,
+    "category": "04_Platforms",
+    "file": "20_ServoShuttle.server.lua",
+    "ru": "Платформа на физической направляющей",
+    "en": "Physical servo shuttle",
+    "setup": "Part без Weld/Constraint к миру / no weld to world. Local X axis; TRAVEL, SPEED. Anchors guide, unanchors platform.",
+    "kind": "server"
+  },
+  {
+    "id": 21,
+    "category": "05_Zones",
+    "file": "21_KillBlock.server.lua",
+    "ru": "Смертельный блок",
+    "en": "Kill block",
+    "setup": "Part; CanTouch=true. Убивает только живого игрока рядом / living nearby players only.",
+    "kind": "server"
+  },
+  {
+    "id": 22,
+    "category": "05_Zones",
+    "file": "22_DamageBlock.server.lua",
+    "ru": "Блок урона",
+    "en": "Damage block",
+    "setup": "Part; DAMAGE и COOLDOWN. Respect ForceField via TakeDamage.",
+    "kind": "server"
+  },
+  {
+    "id": 23,
+    "category": "05_Zones",
+    "file": "23_HealingZone.server.lua",
+    "ru": "Зона лечения",
+    "en": "Healing zone",
+    "setup": "Volume Part; Anchored=true, CanCollide=false; HEAL_PER_SECOND. Queryable characters.",
+    "kind": "server"
+  },
+  {
+    "id": 24,
+    "category": "05_Zones",
+    "file": "24_SlowZone.server.lua",
+    "ru": "Зона замедления",
+    "en": "Slow zone",
+    "setup": "Volume Part; CanCollide=false. Один контроллер скорости на Humanoid / avoid overlapping speed controllers.",
+    "kind": "server"
+  },
+  {
+    "id": 25,
+    "category": "05_Zones",
+    "file": "25_TimedLaser.server.lua",
+    "ru": "Периодический лазер",
+    "en": "Timed laser",
+    "setup": "Part; CanTouch=true. ON_SECONDS / OFF_SECONDS; касание при активном луче / contact while active.",
+    "kind": "server"
+  },
+  {
+    "id": 26,
+    "category": "06_Lighting",
+    "file": "26_DayNightCycle.server.lua",
+    "ru": "Цикл дня и ночи",
+    "en": "Day night cycle",
+    "setup": "Script → ServerScriptService. DAY_MINUTES = длительность суток / real minutes per game day.",
+    "kind": "server"
+  },
+  {
+    "id": 27,
+    "category": "06_Lighting",
+    "file": "27_FlickerLight.server.lua",
+    "ru": "Мерцающая лампа",
+    "en": "Flickering light",
+    "setup": "Part с дочерним PointLight / SpotLight / SurfaceLight.",
+    "kind": "server"
+  },
+  {
+    "id": 28,
+    "category": "06_Lighting",
+    "file": "28_ProximityLamp.server.lua",
+    "ru": "Свет при приближении",
+    "en": "Proximity lamp",
+    "setup": "Part с Light; RADIUS=20. Любой живой игрок в радиусе / any living player nearby.",
+    "kind": "server"
+  },
+  {
+    "id": 29,
+    "category": "06_Lighting",
+    "file": "29_AlarmLight.server.lua",
+    "ru": "Аварийная лампа",
+    "en": "Alarm lamp switch",
+    "setup": "Part с Light. Prompt переключает мигание / toggles flashing. Restores initial color/enabled.",
+    "kind": "server"
+  },
+  {
+    "id": 30,
+    "category": "06_Lighting",
+    "file": "30_ColorPulseLight.server.lua",
+    "ru": "Плавная смена света",
+    "en": "Color pulsing light",
+    "setup": "Part с Light; сначала Enabled=true / enable the Light.",
+    "kind": "server"
+  },
+  {
+    "id": 31,
+    "category": "07_Audio",
+    "file": "31_SpatialLoop.server.lua",
+    "ru": "Зацикленный звук объекта",
+    "en": "Spatial looping sound",
+    "setup": "Part с Sound: свой разрешённый SoundId / permitted audio asset ID. Volume≤1 recommended.",
+    "kind": "server"
+  },
+  {
+    "id": 32,
+    "category": "07_Audio",
+    "file": "32_PromptSound.server.lua",
+    "ru": "Звук по кнопке",
+    "en": "Prompt sound",
+    "setup": "Part с Sound и своим SoundId / Sound with permitted SoundId. Не перезапускает играющий / no restart while playing.",
+    "kind": "server"
+  },
+  {
+    "id": 33,
+    "category": "07_Audio",
+    "file": "33_TouchSound.server.lua",
+    "ru": "Звук по касанию",
+    "en": "Touch sound",
+    "setup": "Part с Sound и своим SoundId / Sound with permitted SoundId; global cooldown=2 s.",
+    "kind": "server"
+  },
+  {
+    "id": 34,
+    "category": "07_Audio",
+    "file": "34_RandomPlaylist.server.lua",
+    "ru": "Случайный плейлист",
+    "en": "Random playlist",
+    "setup": "Part с несколькими Sound / multiple Sounds with permitted SoundIds; track timeout=180 s.",
+    "kind": "server"
+  },
+  {
+    "id": 35,
+    "category": "07_Audio",
+    "file": "35_AmbientZone.client.lua",
+    "ru": "Локальный звук в зоне",
+    "en": "Client ambient zone",
+    "setup": "LocalScript → StarterPlayerScripts. Workspace: Part AmbientZone с Sound; Anchored=true; copy SoundId.",
+    "kind": "client"
+  },
+  {
+    "id": 36,
+    "category": "08_ObjectEffects",
+    "file": "36_Rotator.server.lua",
+    "ru": "Вращающийся декор",
+    "en": "Rotating decoration",
+    "setup": "Anchored Part; косметика / decoration, not a passenger platform.",
+    "kind": "server"
+  },
+  {
+    "id": 37,
+    "category": "08_ObjectEffects",
+    "file": "37_BobbingObject.server.lua",
+    "ru": "Парящий объект",
+    "en": "Bobbing decoration",
+    "setup": "Anchored Part; AMPLITUDE=1.5, PERIOD=3. Cosmetic.",
+    "kind": "server"
+  },
+  {
+    "id": 38,
+    "category": "08_ObjectEffects",
+    "file": "38_CollectibleCoin.server.lua",
+    "ru": "Собираемая монета",
+    "en": "Collectible coin",
+    "setup": "Part; начисляет ObjectCoins в leaderstats на текущую сессию / session-only reward. Shared respawn 10 s.",
+    "kind": "server"
+  },
+  {
+    "id": 39,
+    "category": "08_ObjectEffects",
+    "file": "39_DistanceFade.client.lua",
+    "ru": "Прозрачность вблизи камеры",
+    "en": "Camera distance fade",
+    "setup": "LocalScript → StarterPlayerScripts. Workspace Part FadeObject. Только один Part / affects one part.",
+    "kind": "client"
+  },
+  {
+    "id": 40,
+    "category": "08_ObjectEffects",
+    "file": "40_HoverHighlight.client.lua",
+    "ru": "Подсветка при наведении",
+    "en": "Mouse hover highlight",
+    "setup": "LocalScript → StarterPlayerScripts. Workspace Folder Interactables с Part/Model. Mouse only.",
+    "kind": "client"
+  },
+  {
+    "id": 41,
+    "category": "09_Interactions",
+    "file": "41_ReadNote.client.lua",
+    "ru": "Чтение записки",
+    "en": "Readable note",
+    "setup": "LocalScript → StarterPlayerScripts. Workspace Part NotePart; attribute NoteText (string). Local UI, auto-close beyond 16 studs.",
+    "kind": "client"
+  },
+  {
+    "id": 42,
+    "category": "09_Interactions",
+    "file": "42_SeatPrompt.server.lua",
+    "ru": "Сесть по кнопке",
+    "en": "Seat prompt",
+    "setup": "Script → Seat (не обычный Part / must be Seat).",
+    "kind": "server"
+  },
+  {
+    "id": 43,
+    "category": "09_Interactions",
+    "file": "43_HealthPickup.server.lua",
+    "ru": "Аптечка",
+    "en": "Health pickup",
+    "setup": "Part; HEAL=35; shared respawn 12 seconds. Не расходуется при полном здоровье / stays for full-health players.",
+    "kind": "server"
+  },
+  {
+    "id": 44,
+    "category": "09_Interactions",
+    "file": "44_ToolDispenser.server.lua",
+    "ru": "Выдача инструмента",
+    "en": "Tool dispenser",
+    "setup": "Part; ServerStorage.ToolTemplate (Tool). Свой безопасный Tool / use your own trusted Tool. No duplicates.",
+    "kind": "server"
+  },
+  {
+    "id": 45,
+    "category": "09_Interactions",
+    "file": "45_ToggleParticles.server.lua",
+    "ru": "Переключение частиц",
+    "en": "Particle toggle",
+    "setup": "Part с ParticleEmitter внутри / ParticleEmitters in descendants. Prompt toggles all.",
+    "kind": "server"
+  },
+  {
+    "id": 46,
+    "category": "10_ClientUI",
+    "file": "46_GameClock.client.lua",
+    "ru": "Игровые часы",
+    "en": "Game clock HUD",
+    "setup": "LocalScript → StarterPlayerScripts; отображает Lighting.ClockTime / displays game time.",
+    "kind": "client"
+  },
+  {
+    "id": 47,
+    "category": "10_ClientUI",
+    "file": "47_Compass.client.lua",
+    "ru": "Компас",
+    "en": "Compass HUD",
+    "setup": "LocalScript → StarterPlayerScripts. Север = -Z / North = -Z; camera-based.",
+    "kind": "client"
+  },
+  {
+    "id": 48,
+    "category": "10_ClientUI",
+    "file": "48_Coordinates.client.lua",
+    "ru": "Координаты игрока",
+    "en": "Player coordinates HUD",
+    "setup": "LocalScript → StarterPlayerScripts. X/Y/Z; для строительства и отладки / building/debug HUD.",
+    "kind": "client"
+  },
+  {
+    "id": 49,
+    "category": "10_ClientUI",
+    "file": "49_HUDToggle.client.lua",
+    "ru": "Скрыть интерфейс клавишей H",
+    "en": "HUD toggle key",
+    "setup": "LocalScript → StarterPlayerScripts. TARGETS: имена своих ScreenGui / your ScreenGui names. Keyboard H.",
+    "kind": "client"
+  },
+  {
+    "id": 50,
+    "category": "10_ClientUI",
+    "file": "50_CameraViewpoint.client.lua",
+    "ru": "Камера наблюдения",
+    "en": "Camera viewpoint toggle",
+    "setup": "LocalScript → StarterPlayerScripts. Workspace anchored Part CameraPoint. C toggle, repeats on respawn. Keyboard.",
+    "kind": "client"
+  }
+]

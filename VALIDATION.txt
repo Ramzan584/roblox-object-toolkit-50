@@ -1,0 +1,30 @@
+VALIDATION — Roblox Object Toolkit 50 v1.0.0
+Date: 2026-11-04
+
+PASS: 50/50 Lua-compatible Luau sources parsed with Lua 5.4.
+PASS: 50/50 isolated mocked startup + behavior scenarios.
+PASS: 135 behavior assertions across those scenarios.
+PASS: 50 disabled Script/LocalScript XML templates; source parity with files.
+
+Behavior scenarios cover proximity validation, per-player/shared cooldowns,
+portal loop guard, teleport synchronous/asynchronous failures and timeout,
+door busy state, required Tool validation, expiring two-button gate,
+multiple pressure-plate occupants, state restoration, damage deduplication,
+healing cap, speed restoration without overwriting external changes,
+laser phase, day rollover, audio replay guards, local ambient volume checks,
+coin duplicate prevention, UI filtering, camera restore and respawn cleanup.
+
+NOT VERIFIED: actual Roblox Studio or Roblox client execution, physics,
+constraint transport under player load, CFrame orientation interpolation,
+replication, streaming availability, audio asset permissions, mobile UI.
+The mock uses simplified vectors/CFrames/tweens and is not Roblox emulation.
+PlaceTeleport uses a fake PlaceId only in the test; distributed default is 0.
+No real audio asset or remote teleport was accessed during these checks.
+
+Recommended manual acceptance:
+1. Install one mechanic at a time and follow its catalogue dependencies.
+2. Start a two-player local server; verify per-player cooldowns and shared state.
+3. Check doors for wall/character overlap and physical shuttle under load.
+4. Test all intended client scripts with streaming and respawns.
+5. Verify touch prompts on a phone; H/C and hover are desktop examples.
+6. Publish a test place; verify configured PlaceId and your permitted audio IDs.

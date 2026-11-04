@@ -1,0 +1,2439 @@
+<?xml version='1.0' encoding='utf-8'?>
+<roblox version="4">
+  <Item class="Folder" referent="Toolkit50">
+    <Properties>
+      <string name="Name">ObjectToolkit50_DISABLED_TEMPLATES</string>
+    </Properties>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">01_Teleports</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">01_TouchTeleport.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 01 Touch teleport
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local destination = reference(part, "Destination", "BasePart")
+local untilTime = setmetatable({}, {__mode = "k"})
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    if not player or (untilTime[player] or 0) &gt; os.clock() then return end
+    local character, _, root = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if not character or not destination:IsDescendantOf(workspace) then return end
+    untilTime[player] = os.clock() + 2
+    character:PivotTo(destination.CFrame + Vector3.new(0, destination.Size.Y / 2 + 4, 0))
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.AssemblyAngularVelocity = Vector3.zero
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">02_PromptTeleport.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 02 Prompt teleport
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local destination = reference(part, "Destination", "BasePart")
+local p = prompt(part, "Teleport / Телепорт")
+local cooldown = setmetatable({}, {__mode = "k"})
+onUse(p, part, function(player)
+    if (cooldown[player] or 0) &gt; os.clock() or not destination:IsDescendantOf(workspace) then return end
+    local character, _, root = actor(player, part, 12)
+    if not character then return end
+    cooldown[player] = os.clock() + 2
+    character:PivotTo(destination.CFrame + Vector3.new(0, destination.Size.Y / 2 + 4, 0))
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.AssemblyAngularVelocity = Vector3.zero
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">03_RandomTeleport.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 03 Random destination teleport
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local folder = reference(part, "Destinations", "Folder")
+local random = Random.new()
+local cooldown = setmetatable({}, {__mode = "k"})
+onUse(prompt(part, "Random teleport"), part, function(player)
+    if (cooldown[player] or 0) &gt; os.clock() then return end
+    local choices = {}
+    for _, candidate in ipairs(folder:GetChildren()) do
+        if candidate:IsA("BasePart") and candidate:IsDescendantOf(workspace) then table.insert(choices, candidate) end
+    end
+    if #choices == 0 then return end
+    local character, _, root = actor(player, part, 12)
+    if not character then return end
+    local target = choices[random:NextInteger(1, #choices)]
+    cooldown[player] = os.clock() + 2
+    character:PivotTo(target.CFrame + Vector3.new(0, target.Size.Y / 2 + 4, 0))
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.AssemblyAngularVelocity = Vector3.zero
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">04_PairedPortal.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 04 Paired portals
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local destination = reference(part, "Destination", "BasePart")
+local ATTRIBUTE = "ToolkitPortalUntil"
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    if not player or (player:GetAttribute(ATTRIBUTE) or 0) &gt; workspace:GetServerTimeNow() then return end
+    local character, _, root = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if not character or not destination:IsDescendantOf(workspace) then return end
+    player:SetAttribute(ATTRIBUTE, workspace:GetServerTimeNow() + 3)
+    character:PivotTo(destination.CFrame + Vector3.new(0, destination.Size.Y / 2 + 4, 0))
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.AssemblyAngularVelocity = Vector3.zero
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">05_PlaceTeleport.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 05 Teleport to another place
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local PLACE_ID = 0 -- Set your destination PlaceId, not an experience/universe ID.
+local TeleportService = game:GetService("TeleportService")
+if PLACE_ID &lt;= 0 then warn("PlaceTeleport: configure PLACE_ID first"); return end
+local p = prompt(part, "Travel / Перейти")
+local pending = setmetatable({}, {__mode = "k"})
+TeleportService.TeleportInitFailed:Connect(function(player)
+    pending[player] = nil
+end)
+onUse(p, part, function(player)
+    if pending[player] then return end
+    local ticket = {}
+    pending[player] = ticket
+    local ok, err = pcall(function() TeleportService:TeleportAsync(PLACE_ID, {player}) end)
+    if not ok then pending[player] = nil; warn("Teleport failed: " .. tostring(err)) end
+    task.delay(15, function() if pending[player] == ticket then pending[player] = nil end end)
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">02_Doors</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">06_SlidingDoor.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 06 Sliding door
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local OFFSET, SECONDS = Vector3.new(0, 9, 0), 1
+part.Anchored = true
+local closed, opened, busy = part.CFrame, false, false
+local p = prompt(part, "Open / Close")
+onUse(p, part, function()
+    if busy then return end
+    busy = true; opened = not opened
+    tween(part, SECONDS, {CFrame = opened and closed + OFFSET or closed})
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">07_HingedDoor.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 07 Hinged door
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+part.Anchored = true
+local closed, opened, busy = part.CFrame, false, false
+local hinge = closed * CFrame.new(-part.Size.X / 2, 0, 0)
+local swung = hinge * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(part.Size.X / 2, 0, 0)
+onUse(prompt(part, "Open / Close"), part, function()
+    if busy then return end
+    busy = true; opened = not opened
+    tween(part, 1, {CFrame = opened and swung or closed})
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">08_TimedGate.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 08 Timed gate
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local WAIT_SECONDS = 4
+part.Anchored = true
+local closed, busy = part.CFrame, false
+onUse(prompt(part, "Open gate"), part, function()
+    if busy then return end
+    busy = true
+    tween(part, 1, {CFrame = closed + Vector3.new(0, part.Size.Y + 1, 0)})
+    task.wait(WAIT_SECONDS)
+    if part.Parent then tween(part, 1, {CFrame = closed}) end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">09_KeyDoor.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 09 Key tool door
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local KEY_NAME = "Key"
+part.Anchored = true
+local closed, busy = part.CFrame, false
+onUse(prompt(part, "Use key"), part, function(player)
+    local character = player.Character
+    local backpack = player:FindFirstChildOfClass("Backpack")
+    local key = character and character:FindFirstChild(KEY_NAME)
+    if not (key and key:IsA("Tool")) then key = backpack and backpack:FindFirstChild(KEY_NAME) end
+    if busy or not key or not key:IsA("Tool") then return end
+    busy = true
+    tween(part, 1, {CFrame = closed + Vector3.new(0, part.Size.Y + 1, 0)})
+    task.wait(4)
+    if part.Parent then tween(part, 1, {CFrame = closed}) end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">10_TwoButtonGate.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 10 Two button gate
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local a = reference(part, "ButtonA", "BasePart")
+local b = reference(part, "ButtonB", "BasePart")
+assert(a ~= b, "ButtonA and ButtonB must be different")
+part.Anchored = true
+local pressed, busy, closed = {}, false, part.CFrame
+local function press(button)
+    if busy then return end
+    pressed[button] = os.clock()
+    if not pressed[a] or not pressed[b] or math.abs(pressed[a] - pressed[b]) &gt; 5 then return end
+    busy = true; pressed = {}
+    tween(part, 1, {CFrame = closed + Vector3.new(0, part.Size.Y + 1, 0)})
+    task.wait(4)
+    if part.Parent then tween(part, 1, {CFrame = closed}) end
+    busy = false
+end
+onUse(prompt(a, "Button A"), a, function() press(a) end)
+onUse(prompt(b, "Button B"), b, function() press(b) end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">03_Buttons</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">11_ToggleLight.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 11 Light switch
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local light = reference(part, "Target", "Light")
+onUse(prompt(part, "Toggle light"), part, function() light.Enabled = not light.Enabled end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">12_TimedBridge.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 12 Timed bridge button
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local bridge = reference(part, "Target", "BasePart")
+bridge.Anchored = true
+local shownTransparency, shownCollision = bridge.Transparency, bridge.CanCollide
+bridge.Transparency = 1; bridge.CanCollide = false
+local busy = false
+onUse(prompt(part, "Activate bridge"), part, function()
+    if busy then return end
+    busy = true
+    bridge.Transparency = shownTransparency; bridge.CanCollide = shownCollision
+    task.wait(6)
+    if bridge.Parent then bridge.Transparency = 1; bridge.CanCollide = false end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">13_PressurePlate.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 13 Pressure plate
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local gate = reference(part, "Target", "BasePart")
+local collision, transparency = gate.CanCollide, gate.Transparency
+local params = OverlapParams.new()
+params.FilterType = Enum.RaycastFilterType.Exclude
+params.FilterDescendantsInstances = {part}
+while part.Parent and gate.Parent do
+    local occupied = false
+    for _, hit in ipairs(workspace:GetPartsInPart(part, params)) do
+        if touchedPlayer(hit, part) then occupied = true; break end
+    end
+    gate.CanCollide = not occupied and collision
+    gate.Transparency = occupied and 0.8 or transparency
+    task.wait(0.15)
+end
+if gate.Parent then gate.CanCollide = collision; gate.Transparency = transparency end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">14_ColorCycle.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 14 Color cycle button
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local target = reference(part, "Target", "BasePart")
+local colors = {Color3.fromRGB(255, 85, 90), Color3.fromRGB(80, 200, 255), Color3.fromRGB(110, 255, 150)}
+local index = 0
+onUse(prompt(part, "Next color"), part, function()
+    index = index % #colors + 1
+    target.Color = colors[index]
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">15_ResetObject.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 15 Reset movable object
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local target = reference(part, "Target", "BasePart")
+local start = target.CFrame
+onUse(prompt(part, "Reset object"), part, function()
+    target.CFrame = start
+    target.AssemblyLinearVelocity = Vector3.zero
+    target.AssemblyAngularVelocity = Vector3.zero
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">04_Platforms</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">16_Conveyor.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 16 Conveyor belt
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local SPEED = 14
+local DIRECTION = part.CFrame.LookVector
+part.Anchored = true
+part.AssemblyLinearVelocity = DIRECTION * SPEED
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">17_BouncePad.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 17 Bounce pad
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local UP_SPEED = 85
+local cooldown = setmetatable({}, {__mode = "k"})
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    if not player or (cooldown[player] or 0) &gt; os.clock() then return end
+    local _, _, root = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if not root then return end
+    cooldown[player] = os.clock() + 0.8
+    local v = root.AssemblyLinearVelocity
+    root.AssemblyLinearVelocity = Vector3.new(v.X, UP_SPEED, v.Z)
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">18_DisappearingTile.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 18 Disappearing tile
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local busy = false
+local transparency, collision = part.Transparency, part.CanCollide
+part.Touched:Connect(function(hit)
+    if busy or not touchedPlayer(hit, part) then return end
+    busy = true
+    task.wait(0.5)
+    if not part.Parent then return end
+    part.Transparency = 1; part.CanCollide = false
+    task.wait(3)
+    if part.Parent then part.Transparency = transparency; part.CanCollide = collision end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">19_RisingPlatform.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 19 Rising platform
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local HEIGHT = 12
+part.Anchored = true
+local start, busy = part.CFrame, false
+part.Touched:Connect(function(hit)
+    if busy or not touchedPlayer(hit, part) then return end
+    busy = true
+    tween(part, 2, {CFrame = start + Vector3.new(0, HEIGHT, 0)})
+    task.wait(3)
+    if part.Parent then tween(part, 2, {CFrame = start}) end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">20_ServoShuttle.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 20 Physical servo shuttle
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TRAVEL, SPEED = 20, 6
+local guide = Instance.new("Part")
+guide.Name = part.Name .. "_Guide"
+guide.Size = Vector3.new(1, 1, 1)
+guide.CFrame = part.CFrame
+guide.Anchored = true; guide.Transparency = 1
+guide.CanCollide = false; guide.CanTouch = false; guide.CanQuery = false
+guide.Parent = part.Parent
+local a = Instance.new("Attachment"); a.Parent = guide
+local b = Instance.new("Attachment"); b.Parent = part
+local servo = Instance.new("PrismaticConstraint")
+servo.Attachment0 = a; servo.Attachment1 = b
+servo.LimitsEnabled = true; servo.LowerLimit = 0; servo.UpperLimit = TRAVEL
+servo.ActuatorType = Enum.ActuatorType.Servo
+servo.Speed = SPEED; servo.ServoMaxForce = 1000000; servo.LinearResponsiveness = 35
+servo.Parent = guide
+part.Anchored = false
+part:SetNetworkOwner(nil)
+local far = true
+while part.Parent and guide.Parent do
+    servo.TargetPosition = far and TRAVEL or 0
+    far = not far
+    task.wait(TRAVEL / SPEED + 2)
+end
+if guide.Parent then guide:Destroy() end
+if b.Parent then b:Destroy() end
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">05_Zones</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">21_KillBlock.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 21 Kill block
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if humanoid then humanoid.Health = 0 end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">22_DamageBlock.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 22 Damage block
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local DAMAGE, COOLDOWN = 20, 1
+local nextHit = setmetatable({}, {__mode = "k"})
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    if not player or (nextHit[player] or 0) &gt; os.clock() then return end
+    local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if not humanoid then return end
+    nextHit[player] = os.clock() + COOLDOWN
+    humanoid:TakeDamage(DAMAGE)
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">23_HealingZone.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 23 Healing zone
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local HEAL_PER_SECOND = 8
+local params = OverlapParams.new()
+params.FilterType = Enum.RaycastFilterType.Exclude
+params.FilterDescendantsInstances = {part}
+while part.Parent do
+    local seen = {}
+    for _, hit in ipairs(workspace:GetPartsInPart(part, params)) do
+        local player = touchedPlayer(hit, part)
+        if player and not seen[player] then
+            seen[player] = true
+            local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+            if humanoid then humanoid.Health = math.min(humanoid.MaxHealth, humanoid.Health + HEAL_PER_SECOND * 0.5) end
+        end
+    end
+    task.wait(0.5)
+end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">24_SlowZone.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 24 Slow zone
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local SLOW_SPEED = 7
+local occupants = {}
+local params = OverlapParams.new()
+params.FilterType = Enum.RaycastFilterType.Exclude
+params.FilterDescendantsInstances = {part}
+local function restore(humanoid, previous)
+    if humanoid.Parent and humanoid.WalkSpeed == SLOW_SPEED then humanoid.WalkSpeed = previous end
+end
+while part.Parent do
+    local inside = {}
+    for _, hit in ipairs(workspace:GetPartsInPart(part, params)) do
+        local player = touchedPlayer(hit, part)
+        local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+        if humanoid then
+            inside[humanoid] = true
+            if occupants[humanoid] == nil then
+                occupants[humanoid] = humanoid.WalkSpeed
+                humanoid.WalkSpeed = math.min(SLOW_SPEED, humanoid.WalkSpeed)
+            end
+        end
+    end
+    for humanoid, previous in pairs(occupants) do
+        if not inside[humanoid] then restore(humanoid, previous); occupants[humanoid] = nil end
+    end
+    task.wait(0.2)
+end
+for humanoid, previous in pairs(occupants) do restore(humanoid, previous) end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">25_TimedLaser.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 25 Timed laser
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local ON_SECONDS, OFF_SECONDS = 3, 2
+local active = true
+local visible, collision = part.Transparency, part.CanCollide
+part.Touched:Connect(function(hit)
+    if not active then return end
+    local player = touchedPlayer(hit, part)
+    local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if humanoid then humanoid:TakeDamage(100) end
+end)
+while part.Parent do
+    active = true; part.Transparency = visible; part.CanCollide = collision
+    task.wait(ON_SECONDS)
+    active = false; part.Transparency = 1; part.CanCollide = false
+    task.wait(OFF_SECONDS)
+end
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">06_Lighting</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">26_DayNightCycle.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 26 Day night cycle
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local DAY_MINUTES = 12
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local connection = RunService.Heartbeat:Connect(function(dt)
+    Lighting.ClockTime = (Lighting.ClockTime + dt * 24 / (DAY_MINUTES * 60)) % 24
+end)
+script.Destroying:Connect(function() connection:Disconnect() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">27_FlickerLight.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 27 Flickering light
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local light = part:FindFirstChildWhichIsA("Light")
+assert(light, "Add a Light inside the part")
+local initial = light.Enabled
+local random = Random.new()
+while part.Parent and light.Parent do
+    light.Enabled = random:NextNumber() &gt; 0.25
+    task.wait(random:NextNumber(0.08, 0.5))
+end
+if light.Parent then light.Enabled = initial end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">28_ProximityLamp.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 28 Proximity lamp
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local RADIUS = 20
+local light = part:FindFirstChildWhichIsA("Light")
+assert(light, "Add a Light inside the part")
+while part.Parent and light.Parent do
+    local nearby = false
+    for _, player in ipairs(Players:GetPlayers()) do
+        if actor(player, part, RADIUS) then nearby = true; break end
+    end
+    light.Enabled = nearby
+    task.wait(0.25)
+end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">29_AlarmLight.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 29 Alarm lamp switch
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local light = part:FindFirstChildWhichIsA("Light")
+assert(light, "Add a Light inside the part")
+local color, enabled, active = light.Color, light.Enabled, false
+onUse(prompt(part, "Alarm on / off"), part, function() active = not active end)
+while part.Parent and light.Parent do
+    if active then
+        light.Color = Color3.fromRGB(255, 35, 35)
+        light.Enabled = not light.Enabled
+    else
+        light.Color = color; light.Enabled = enabled
+    end
+    task.wait(0.3)
+end
+if light.Parent then light.Color = color; light.Enabled = enabled end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">30_ColorPulseLight.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 30 Color pulsing light
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TweenService = game:GetService("TweenService")
+local function tween(target, seconds, properties)
+    local t = TweenService:Create(target, TweenInfo.new(seconds, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), properties)
+    t:Play()
+    t.Completed:Wait()
+end
+local light = part:FindFirstChildWhichIsA("Light")
+assert(light, "Add a Light inside the part")
+while part.Parent and light.Parent do
+    tween(light, 2, {Color = Color3.fromRGB(80, 150, 255)})
+    if not light.Parent then break end
+    tween(light, 2, {Color = Color3.fromRGB(210, 90, 255)})
+end
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">07_Audio</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">31_SpatialLoop.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 31 Spatial looping sound
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local sound = part:FindFirstChildOfClass("Sound")
+assert(sound and sound.SoundId ~= "", "Add Sound with a permitted SoundId")
+sound.Looped = true
+sound.RollOffMinDistance = 5; sound.RollOffMaxDistance = 60
+sound:Play()
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">32_PromptSound.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 32 Prompt sound
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local sound = part:FindFirstChildOfClass("Sound")
+assert(sound and sound.SoundId ~= "", "Add Sound with a permitted SoundId")
+sound.Looped = false
+onUse(prompt(part, "Play sound"), part, function()
+    if not sound.IsPlaying then sound:Play() end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">33_TouchSound.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 33 Touch sound
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local sound = part:FindFirstChildOfClass("Sound")
+assert(sound and sound.SoundId ~= "", "Add Sound with a permitted SoundId")
+local nextTime = 0
+sound.Looped = false
+part.Touched:Connect(function(hit)
+    if os.clock() &lt; nextTime or sound.IsPlaying or not touchedPlayer(hit, part) then return end
+    nextTime = os.clock() + 2
+    sound:Play()
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">34_RandomPlaylist.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 34 Random playlist
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local random = Random.new()
+local previous
+while part.Parent do
+    local choices = {}
+    for _, sound in ipairs(part:GetChildren()) do
+        if sound:IsA("Sound") and sound.SoundId ~= "" then table.insert(choices, sound) end
+    end
+    if #choices == 0 then warn("RandomPlaylist: add permitted Sound assets"); return end
+    local selected = choices[random:NextInteger(1, #choices)]
+    if #choices &gt; 1 and selected == previous then
+        for _, sound in ipairs(choices) do if sound ~= previous then selected = sound; break end end
+    end
+    for _, sound in ipairs(choices) do sound:Stop() end
+    selected.Looped = false
+    selected:Play()
+    local elapsed = 0
+    repeat task.wait(0.25); elapsed = elapsed + 0.25
+    until not part.Parent or not selected.Parent or not selected.IsPlaying or elapsed &gt;= 180
+    if selected.Parent then selected:Stop() end
+    previous = selected
+    task.wait(0.5)
+end
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">35_AmbientZone.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 35 Client ambient zone
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local player = game:GetService("Players").LocalPlayer
+local SoundService = game:GetService("SoundService")
+local zone = workspace:WaitForChild("AmbientZone", 15)
+assert(zone and zone:IsA("BasePart"), "Create Workspace.AmbientZone Part")
+local template = zone:FindFirstChildOfClass("Sound")
+assert(template and template.SoundId ~= "", "AmbientZone needs a Sound asset")
+local sound = template:Clone()
+sound.Name = "ToolkitAmbientLocal"; sound.Looped = true; sound.Parent = SoundService
+while script.Parent and zone.Parent do
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    local inside = false
+    if root then
+        local p = zone.CFrame:PointToObjectSpace(root.Position)
+        local half = zone.Size / 2
+        inside = math.abs(p.X) &lt;= half.X and math.abs(p.Y) &lt;= half.Y and math.abs(p.Z) &lt;= half.Z
+    end
+    if inside and not sound.IsPlaying then sound:Play() end
+    if not inside and sound.IsPlaying then sound:Stop() end
+    task.wait(0.2)
+end
+sound:Destroy()
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">08_ObjectEffects</string>
+      </Properties>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">36_Rotator.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 36 Rotating decoration
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local RunService = game:GetService("RunService")
+local SPEED = math.rad(45)
+part.Anchored = true
+local start, angle = part.CFrame, 0
+local connection = RunService.Heartbeat:Connect(function(dt)
+    angle = (angle + SPEED * dt) % (math.pi * 2)
+    part.CFrame = start * CFrame.Angles(0, angle, 0)
+end)
+part.Destroying:Connect(function() connection:Disconnect() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">37_BobbingObject.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 37 Bobbing decoration
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local RunService = game:GetService("RunService")
+local AMPLITUDE, PERIOD = 1.5, 3
+part.Anchored = true
+local start, elapsed = part.CFrame, 0
+local connection = RunService.Heartbeat:Connect(function(dt)
+    elapsed = (elapsed + dt) % PERIOD
+    part.CFrame = start + Vector3.new(0, math.sin(elapsed / PERIOD * math.pi * 2) * AMPLITUDE, 0)
+end)
+part.Destroying:Connect(function() connection:Disconnect() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">38_CollectibleCoin.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 38 Collectible coin
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local busy = false
+local transparency = part.Transparency
+part.CanCollide = false
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    if busy or not player then return end
+    busy = true
+    local board = player:FindFirstChild("leaderstats")
+    if not board then board = Instance.new("Folder"); board.Name = "leaderstats"; board.Parent = player end
+    local coins = board:FindFirstChild("ObjectCoins")
+    if coins and not coins:IsA("IntValue") then busy = false; warn("ObjectCoins must be IntValue"); return end
+    if not coins then coins = Instance.new("IntValue"); coins.Name = "ObjectCoins"; coins.Parent = board end
+    coins.Value = coins.Value + 1
+    part.Transparency = 1
+    task.wait(10)
+    if part.Parent then part.Transparency = transparency end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">39_DistanceFade.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 39 Camera distance fade
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local RunService = game:GetService("RunService")
+local target = workspace:WaitForChild("FadeObject", 15)
+assert(target and target:IsA("BasePart"), "Create Workspace.FadeObject Part")
+local old = target.LocalTransparencyModifier
+local connection = RunService.RenderStepped:Connect(function()
+    local camera = workspace.CurrentCamera
+    if camera and target.Parent then
+        local distance = (camera.CFrame.Position - target.Position).Magnitude
+        target.LocalTransparencyModifier = math.clamp(1 - distance / 12, 0, 1)
+    end
+end)
+script.Destroying:Connect(function()
+    connection:Disconnect()
+    if target.Parent then target.LocalTransparencyModifier = old end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">40_HoverHighlight.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 40 Mouse hover highlight
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local player = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+local folder = workspace:WaitForChild("Interactables", 15)
+assert(folder and folder:IsA("Folder"), "Create Workspace.Interactables Folder")
+local mouse = player:GetMouse()
+local highlight = Instance.new("Highlight")
+highlight.Name = "ToolkitHover"; highlight.FillTransparency = 0.8
+highlight.Parent = workspace
+local connection = RunService.RenderStepped:Connect(function()
+    local target = mouse.Target
+    highlight.Adornee = target and target:IsDescendantOf(folder) and target or nil
+end)
+script.Destroying:Connect(function() connection:Disconnect(); highlight:Destroy() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">09_Interactions</string>
+      </Properties>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">41_ReadNote.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 41 Readable note
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local part = workspace:WaitForChild("NotePart", 15)
+assert(part and part:IsA("BasePart"), "Create Workspace.NotePart")
+local gui = Instance.new("ScreenGui")
+gui.Name = "ToolkitNote"; gui.ResetOnSpawn = false; gui.Parent = player:WaitForChild("PlayerGui")
+local panel = Instance.new("TextButton")
+panel.Size = UDim2.fromScale(0.65, 0.5); panel.Position = UDim2.fromScale(0.175, 0.25)
+panel.BackgroundColor3 = Color3.fromRGB(25, 28, 35); panel.TextColor3 = Color3.fromRGB(245, 245, 245)
+panel.TextWrapped = true; panel.TextSize = 22; panel.Visible = false; panel.Parent = gui
+local p = Instance.new("ProximityPrompt")
+p.ActionText = "Read / Читать"; p.MaxActivationDistance = 10; p.Parent = part
+p.Triggered:Connect(function(who)
+    if who ~= player then return end
+    panel.Text = tostring(part:GetAttribute("NoteText") or "Write NoteText on NotePart") .. "\n\n[Tap to close / Нажми, чтобы закрыть]"
+    panel.Visible = true
+end)
+panel.Activated:Connect(function() panel.Visible = false end)
+local connection = game:GetService("RunService").Heartbeat:Connect(function()
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or not part.Parent or (root.Position - part.Position).Magnitude &gt; 16 then panel.Visible = false end
+end)
+script.Destroying:Connect(function() connection:Disconnect(); p:Destroy(); gui:Destroy() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">42_SeatPrompt.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 42 Seat prompt
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+assert(part:IsA("Seat"), "Put this Script inside a Seat")
+onUse(prompt(part, "Sit / Сесть"), part, function(player)
+    local _, humanoid = actor(player, part, 12)
+    if humanoid and not part.Occupant and not humanoid.SeatPart then part:Sit(humanoid) end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">43_HealthPickup.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 43 Health pickup
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local HEAL, RESPAWN = 35, 12
+local busy, transparency = false, part.Transparency
+part.CanCollide = false
+part.Touched:Connect(function(hit)
+    local player = touchedPlayer(hit, part)
+    local _, humanoid = actor(player, part, part.Size.Magnitude / 2 + 8)
+    if busy or not humanoid or humanoid.Health &gt;= humanoid.MaxHealth then return end
+    busy = true
+    humanoid.Health = math.min(humanoid.MaxHealth, humanoid.Health + HEAL)
+    part.Transparency = 1
+    task.wait(RESPAWN)
+    if part.Parent then part.Transparency = transparency end
+    busy = false
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">44_ToolDispenser.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 44 Tool dispenser
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local TOOL_NAME = "ToolTemplate"
+local template = game:GetService("ServerStorage"):WaitForChild(TOOL_NAME, 15)
+assert(template and template:IsA("Tool"), "Create ServerStorage.ToolTemplate Tool")
+onUse(prompt(part, "Take tool"), part, function(player)
+    local backpack = player:FindFirstChildOfClass("Backpack")
+    local character = player.Character
+    if not backpack or not character then return end
+    if backpack:FindFirstChild(TOOL_NAME) or character:FindFirstChild(TOOL_NAME) then return end
+    template:Clone().Parent = backpack
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="Script">
+        <Properties>
+          <string name="Name">45_ToggleParticles.server.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 45 Particle toggle
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local function actor(player, origin, range)
+    local character = player and player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or humanoid.Health &lt;= 0 or not root then return end
+    if origin and (root.Position - origin.Position).Magnitude &gt; range then return end
+    return character, humanoid, root
+end
+local function touchedPlayer(hit, origin)
+    local model = hit:FindFirstAncestorOfClass("Model")
+    local player = model and Players:GetPlayerFromCharacter(model)
+    if player and actor(player, origin, origin.Size.Magnitude / 2 + 8) then return player end
+end
+local function reference(parent, name, class)
+    local value = parent:FindFirstChild(name)
+    local target = value and value:IsA("ObjectValue") and value.Value
+    assert(target and target:IsA(class), "Add ObjectValue '" .. name .. "' pointing to " .. class)
+    return target
+end
+local function prompt(parent, action)
+    local p = Instance.new("ProximityPrompt")
+    p.Name = "ToolkitPrompt"
+    p.ActionText = action
+    p.ObjectText = parent.Name
+    p.MaxActivationDistance = 10
+    p.HoldDuration = 0.15
+    p.Parent = parent
+    return p
+end
+local function onUse(p, origin, callback)
+    p.Triggered:Connect(function(player)
+        if p.Enabled and actor(player, origin, p.MaxActivationDistance + 2) then callback(player) end
+    end)
+end
+local part = script.Parent
+assert(part:IsA("BasePart"), "Put this Script inside a BasePart")
+local enabled = false
+for _, emitter in ipairs(part:GetDescendants()) do
+    if emitter:IsA("ParticleEmitter") then emitter.Enabled = enabled end
+end
+onUse(prompt(part, "Particles on / off"), part, function()
+    enabled = not enabled
+    for _, emitter in ipairs(part:GetDescendants()) do
+        if emitter:IsA("ParticleEmitter") then emitter.Enabled = enabled end
+    end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder">
+      <Properties>
+        <string name="Name">10_ClientUI</string>
+      </Properties>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">46_GameClock.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 46 Game clock HUD
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "ToolkitClock"; gui.ResetOnSpawn = false
+local old = player:WaitForChild("PlayerGui"):FindFirstChild(gui.Name)
+if old then old:Destroy() end
+gui.Parent = player:WaitForChild("PlayerGui")
+local label = Instance.new("TextLabel")
+label.Position = UDim2.new(0, 16, 0, 16)
+label.Size = UDim2.fromOffset(260, 34)
+label.BackgroundColor3 = Color3.fromRGB(22, 25, 33)
+label.BackgroundTransparency = 0.15
+label.TextColor3 = Color3.fromRGB(235, 240, 255)
+label.TextSize = 18; label.Parent = gui
+
+local Lighting = game:GetService("Lighting")
+local connection = RunService.Heartbeat:Connect(function()
+    local minutes = math.floor(Lighting.ClockTime * 60) % 1440
+    label.Text = string.format("%02d:%02d", math.floor(minutes / 60), minutes % 60)
+end)
+script.Destroying:Connect(function() connection:Disconnect(); gui:Destroy() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">47_Compass.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 47 Compass HUD
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "ToolkitCompass"; gui.ResetOnSpawn = false
+local old = player:WaitForChild("PlayerGui"):FindFirstChild(gui.Name)
+if old then old:Destroy() end
+gui.Parent = player:WaitForChild("PlayerGui")
+local label = Instance.new("TextLabel")
+label.Position = UDim2.new(0, 16, 0, 56)
+label.Size = UDim2.fromOffset(260, 34)
+label.BackgroundColor3 = Color3.fromRGB(22, 25, 33)
+label.BackgroundTransparency = 0.15
+label.TextColor3 = Color3.fromRGB(235, 240, 255)
+label.TextSize = 18; label.Parent = gui
+
+local connection = RunService.RenderStepped:Connect(function()
+    local camera = workspace.CurrentCamera
+    if not camera then return end
+    local look = camera.CFrame.LookVector
+    local heading = math.deg(math.atan2(look.X, -look.Z)) % 360
+    local names = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"}
+    label.Text = string.format("%s  %03d°", names[math.floor((heading + 22.5) / 45) % 8 + 1], math.floor(heading))
+end)
+script.Destroying:Connect(function() connection:Disconnect(); gui:Destroy() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">48_Coordinates.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 48 Player coordinates HUD
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "ToolkitCoordinates"; gui.ResetOnSpawn = false
+local old = player:WaitForChild("PlayerGui"):FindFirstChild(gui.Name)
+if old then old:Destroy() end
+gui.Parent = player:WaitForChild("PlayerGui")
+local label = Instance.new("TextLabel")
+label.Position = UDim2.new(0, 16, 0, 96)
+label.Size = UDim2.fromOffset(260, 34)
+label.BackgroundColor3 = Color3.fromRGB(22, 25, 33)
+label.BackgroundTransparency = 0.15
+label.TextColor3 = Color3.fromRGB(235, 240, 255)
+label.TextSize = 18; label.Parent = gui
+
+local elapsed = 0
+local connection = RunService.Heartbeat:Connect(function(dt)
+    elapsed = elapsed + dt
+    if elapsed &lt; 0.1 then return end
+    elapsed = 0
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if root then
+        local p = root.Position
+        label.Text = string.format("X %.1f   Y %.1f   Z %.1f", p.X, p.Y, p.Z)
+    else label.Text = "Waiting for character…" end
+end)
+script.Destroying:Connect(function() connection:Disconnect(); gui:Destroy() end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">49_HUDToggle.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 49 HUD toggle key
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local UserInputService = game:GetService("UserInputService")
+local player = game:GetService("Players").LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local TARGETS = {"ToolkitClock", "ToolkitCompass", "ToolkitCoordinates"}
+local hidden, saved = false, {}
+local function apply(gui)
+    if not gui:IsA("ScreenGui") or not table.find(TARGETS, gui.Name) then return end
+    if hidden then
+        if saved[gui] == nil then saved[gui] = gui.Enabled end
+        gui.Enabled = false
+    end
+end
+local childConnection = playerGui.ChildAdded:Connect(apply)
+local connection = UserInputService.InputBegan:Connect(function(input, processed)
+    if processed or UserInputService:GetFocusedTextBox() or input.KeyCode ~= Enum.KeyCode.H then return end
+    hidden = not hidden
+    if hidden then for _, gui in ipairs(playerGui:GetChildren()) do apply(gui) end
+    else
+        for gui, enabled in pairs(saved) do if gui.Parent then gui.Enabled = enabled end end
+        saved = {}
+    end
+end)
+script.Destroying:Connect(function()
+    connection:Disconnect(); childConnection:Disconnect()
+    for gui, enabled in pairs(saved) do if gui.Parent then gui.Enabled = enabled end end
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="LocalScript">
+        <Properties>
+          <string name="Name">50_CameraViewpoint.client.lua</string>
+          <bool name="Disabled">true</bool>
+          <ProtectedString name="Source">-- Object Toolkit 50 | 50 Camera viewpoint toggle
+-- MIT | timura032 | Setup: README / INSTALL_RU_EN.txt
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local point = workspace:WaitForChild("CameraPoint", 15)
+assert(point and point:IsA("BasePart"), "Create Workspace.CameraPoint Part")
+local active, saved = false, nil
+local function restore()
+    if not saved then return end
+    local camera = saved.camera
+    if camera and camera == workspace.CurrentCamera then
+        camera.CameraType = saved.kind
+        camera.CameraSubject = saved.subject
+        camera.CFrame = saved.frame
+    end
+    saved = nil; active = false
+end
+local inputConnection = UserInputService.InputBegan:Connect(function(input, processed)
+    if processed or UserInputService:GetFocusedTextBox() or input.KeyCode ~= Enum.KeyCode.C then return end
+    if active then restore(); return end
+    local camera = workspace.CurrentCamera
+    if not camera or not point.Parent then return end
+    saved = {camera = camera, kind = camera.CameraType, subject = camera.CameraSubject, frame = camera.CFrame}
+    active = true
+    camera.CameraType = Enum.CameraType.Scriptable
+    camera.CFrame = point.CFrame
+end)
+local frameConnection = RunService.RenderStepped:Connect(function()
+    if not active then return end
+    if not point.Parent or workspace.CurrentCamera ~= saved.camera then restore(); return end
+    saved.camera.CFrame = point.CFrame
+end)
+local characterConnection = player.CharacterAdded:Connect(restore)
+script.Destroying:Connect(function()
+    restore(); inputConnection:Disconnect(); frameConnection:Disconnect(); characterConnection:Disconnect()
+end)
+</ProtectedString>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+</roblox>
